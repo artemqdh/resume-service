@@ -1,7 +1,10 @@
-﻿using Application.IService;
+﻿using System.Collections.Generic;
+using System.Net;
+using System.Text.RegularExpressions;
+using Application.IService;
 using Domain.Entity;
-using PuppeteerSharp;
 using Newtonsoft.Json.Linq;
+using PuppeteerSharp;
 
 namespace Infrastructure.Services
 {
@@ -34,18 +37,19 @@ namespace Infrastructure.Services
                 // Парсим JSON
                 var data = JObject.Parse(jsonLdRaw);
 
+                string? rawDescription = data["description"]?.ToString() ?? "";
+
+                string? cleanDescription = Regex.Replace(rawDescription, "<.*?>", string.Empty);
+
+                cleanDescription = WebUtility.HtmlDecode(cleanDescription);
 
                 return new Vacancy
                 {
                     Title = data["title"]?.ToString() ?? "Без названия",
-                    // Название компании находится в объекте hiringOrganization
-                    Description = data["description"]?.ToString() ?? "",
-                    Country = data["jobLocation"]?["address"]?["addressLocality"]?.ToString(),
-                    // Пример получения организации: (string)data["hiringOrganization"]?["name"]
-                   // WorkSchedule = data["employmentType"]?.ToString()
+                    Description = cleanDescription.Trim()
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }
