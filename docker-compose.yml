@@ -1,15 +1,15 @@
-﻿version: '3.8'
+version: '3.8'
 
 services:
   api-resume:
     build:
-      context: ..
+      context: .
       dockerfile: WebApi/Dockerfile # путь к файлу внутри решения
     ports:
       - "5000:8080" # Внешний порт 5000 -> Внутренний 8080
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=vacancy_db;Username=igor;Password=password
+      - ConnectionStrings__DefaultConnection=Host=db-postgres;Port=5432;Database=vacancy_db;Username=igor;Password=password
     depends_on:
       - db-postgres
 

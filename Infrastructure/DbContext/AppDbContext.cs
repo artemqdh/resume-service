@@ -11,7 +11,7 @@ namespace Infrastructure
         {
         }
 
-       DbSet<Vacancy> Vacancies { get; set; } = null!;
+      public DbSet<Vacancy> Vacancies { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

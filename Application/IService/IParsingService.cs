@@ -1,9 +1,10 @@
-﻿using Domain.Entity;
+﻿using Application.DTO;
+using Domain.Entity;
 
 namespace Application.IService
 {
     public interface IParsingService
     {
-        Task<Vacancy?> ParsingUrl(string url);
+        Task<VacancyDTO?> ParsingUrl(string url);
     }
 }
