@@ -1,4 +1,24 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    libgconf-2-4 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libgdk-pixbuf2.0-0 \
+    libgtk-3-0 \
+    libgbm-dev \
+    libnss3 \
+    libxss1 \
+    libasound2 \
+    chromium \
+    --no-install-recommends && \
+    rm -rf /var/lib/apt/lists/*
+
+# Указываем Puppeteer, где искать установленный Chromium
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
 USER $APP_UID
 WORKDIR /app
 EXPOSE 8080

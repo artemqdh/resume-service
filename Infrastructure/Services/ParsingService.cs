@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Text.RegularExpressions;
+using Application.DTO;
 using Application.IService;
-using Domain.Entity;
 using Newtonsoft.Json.Linq;
 using PuppeteerSharp;
 
@@ -10,14 +9,31 @@ namespace Infrastructure.Services
 {
     public class ParsingService : IParsingService
     {
-        public async Task<Vacancy?> ParsingUrl(string url)
+        private string _ExecutablePath;
+
+        public ParsingService()
+        {
+            _ExecutablePath = "/usr/bin/chromium";
+        }
+
+
+        public async Task<VacancyDTO?> ParsingUrl(string url)
         {
             try
             {
                 using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
                 {
                     Headless = true,
-                    ExecutablePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe"
+                    Args = new[] {
+                        "--no-sandbox",
+                        "--disable-setuid-sandbox",
+                        "--disable-dev-shm-usage", // Решает проблему вылетов
+                        "--disable-gpu"            // Рекомендуется для Docker
+                    },
+                    ExecutablePath = _ExecutablePath
+
+                    //http
+                    // ExecutablePath = @"C:\Program Files\Google\Chrome\Application\chrome.exe"
                 });
 
                 using var page = await browser.NewPageAsync();
@@ -25,7 +41,7 @@ namespace Infrastructure.Services
                 // Устанавливаем User-Agent, чтобы сайт не блокировал запрос
                 await page.SetUserAgentAsync("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
 
-                await page.GoToAsync(url, WaitUntilNavigation.Networkidle2);
+                await page.GoToAsync(url, WaitUntilNavigation.DOMContentLoaded);
 
                 // Извлекаем содержимое тега script с типом application/ld+json
                 var jsonLdRaw = await page.EvaluateExpressionAsync<string>(
@@ -43,7 +59,7 @@ namespace Infrastructure.Services
 
                 cleanDescription = WebUtility.HtmlDecode(cleanDescription);
 
-                return new Vacancy
+                return new VacancyDTO
                 {
                     Title = data["title"]?.ToString() ?? "Без названия",
                     Description = cleanDescription.Trim()
@@ -51,7 +67,7 @@ namespace Infrastructure.Services
             }
             catch (Exception)
             {
-                return null;
+                return null;  // TODO logger
             }
         }
     }

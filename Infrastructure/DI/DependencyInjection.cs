@@ -15,11 +15,13 @@ namespace Infrastructure.DI
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
+            string? connectionString = configuration.GetConnectionString("DefaultConnection");
+
             services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"))); //EF
+                options.UseNpgsql(connectionString)); //EF
 
             services.AddScoped<IDbConnection>(sp =>
-                 new NpgsqlConnection(configuration.GetConnectionString("DefaultConnection")));//DAPPER
+                 new NpgsqlConnection(connectionString));//DAPPER
 
             services.AddScoped<IVacancyRepository, VacancyRepository>();
             services.AddScoped<IParsingService, ParsingService>();
