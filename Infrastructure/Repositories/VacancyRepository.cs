@@ -1,33 +1,21 @@
 ﻿using System.Data;
-using Application.InterfaceRepository;
 using Dapper;
 using Domain.Entity;
 
 namespace Infrastructure.Repositories
 {
-    public class VacancyRepository : IVacancyRepository
+    public class VacancyRepository : BaseRepository<Vacancy>
     {
-        private readonly AppDbContext _db; //EF
-        private readonly IDbConnection _connection; //Dupper
-
         //
         //
         //
         public VacancyRepository(AppDbContext db, IDbConnection connection)
+            : base(db, connection)
         {
-            _db = db;
-            _connection = connection;
-        }
-
-        //добавляем\сохраняем
-        public async Task AddAsync(Vacancy vacancy, CancellationToken ct)
-        {
-            await _db.AddAsync(vacancy);
-            await _db.SaveChangesAsync(ct);
         }
 
         //получаем все
-        public async Task<IEnumerable<Vacancy>> GetAllAsync(CancellationToken ct)
+        public override async Task<IEnumerable<Vacancy>> GetAllAsync(CancellationToken ct)
         {
             const string sql = "SELECT \"Id\", \"Title\", \"Description\", \"Location\", \"WorkSchedule\" FROM \"Vacancies\"";
 
@@ -37,11 +25,11 @@ namespace Infrastructure.Repositories
         }
 
         //получаем по id
-        public async Task<Vacancy?> GetByIdAsync(int id)
+        public override async Task<Vacancy?> GetByIdAsync(int id, CancellationToken ct)
         {
             const string sql = "SELECT \"Id\", \"Title\", \"Description\", \"Location\", \"WorkSchedule\" FROM \"Vacancies\" WHERE Id = @Id";
 
-            return await _connection.QueryFirstOrDefaultAsync<Vacancy>(sql, new { Id = id });
+            return await _connection.QueryFirstOrDefaultAsync<Vacancy>(new CommandDefinition(sql, new { Id = id }, cancellationToken: ct));
         }
     }
 }

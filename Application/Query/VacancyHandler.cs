@@ -8,9 +8,9 @@ namespace Application.Query
 
     public class VacancyHandler : IRequestHandler<GetVacanciesQuery, IEnumerable<Vacancy>>
     {
-        private readonly IVacancyRepository _repository;
+        private readonly IRepository<Vacancy> _repository;
 
-        public VacancyHandler(IVacancyRepository repository)
+        public VacancyHandler(IRepository<Vacancy> repository)
         {
             _repository = repository;
         }

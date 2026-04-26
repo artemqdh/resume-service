@@ -2,6 +2,7 @@
 using Application.InterfaceRepository;
 using Application.IService;
 using Application.Query;
+using Domain.Entity;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +24,7 @@ namespace Infrastructure.DI
             services.AddScoped<IDbConnection>(sp =>
                  new NpgsqlConnection(connectionString));//DAPPER
 
-            services.AddScoped<IVacancyRepository, VacancyRepository>();
+            services.AddScoped<IRepository<Vacancy>, VacancyRepository>();
             services.AddScoped<IParsingService, ParsingService>();
 
             services.AddMediatR(cfg => {

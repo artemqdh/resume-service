@@ -25,10 +25,10 @@ namespace Application.Command
 
     public class ParsingAppHandler : IRequestHandler<ParsingHandler, VacancyDTO?>
     {
-        private readonly IVacancyRepository _Repository;
+        private readonly IRepository<Vacancy> _Repository;
         private readonly IParsingService _Service;
 
-        public ParsingAppHandler(IVacancyRepository repository, IParsingService service)
+        public ParsingAppHandler(IRepository<Vacancy> repository, IParsingService service)
         {
             _Repository = repository;
             _Service = service;
