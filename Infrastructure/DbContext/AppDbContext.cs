@@ -12,6 +12,7 @@ namespace Infrastructure
         }
 
       public DbSet<Vacancy> Vacancies { get; set; }
+      public DbSet<Resume> Resumes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
